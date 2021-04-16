@@ -9,9 +9,7 @@ while start <= end:
     acc = 0
     for i in range(1, n+1):
         acc += min(mid//i, n) # mid보다 작거나 같은 수의 갯수
-    
-    print(mid, acc)
-    
+        
     if acc >= k:
         answer = mid # B[k] = mid
         end = mid - 1
