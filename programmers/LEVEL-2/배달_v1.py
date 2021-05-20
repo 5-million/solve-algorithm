@@ -24,7 +24,6 @@ def solution(N, road, K):
                 heapq.heappush(heap, [nxt_cost, nxt])
     
     ans = 0
-    print(distance)
     for dist in distance:
         if dist <= K:
             ans += 1
