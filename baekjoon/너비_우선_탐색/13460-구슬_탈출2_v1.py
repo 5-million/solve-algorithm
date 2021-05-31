@@ -1,14 +1,11 @@
-import sys
 from collections import deque
 
-INPUT = sys.stdin.readline
-
-n, m = map(int, INPUT().split()) # n: 세로, m: 가로
+n, m = map(int, input().split()) # n: 세로, m: 가로
 # .: 빈칸, #: 장애물 또는 벽, o: 구멍, R: 빨간 구슬, B: 파란 구슬
 board = []
 red, blue = [], []
 for col in range(n):
-    row = list(INPUT())
+    row = list(input())
     board.append(row)
     if 'R' in row:
         red = [col, row.index('R')]
