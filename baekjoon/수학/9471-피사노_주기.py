@@ -12,11 +12,3 @@ for _ in range(t):
         if a == 1 and b == 1:
             print(case, i-2)
             break
-
-
-# 5
-# 1 4
-# 2 5
-# 3 11
-# 4 123456
-# 5 987654
