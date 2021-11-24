@@ -6,7 +6,7 @@ import java.util.Stack;
  * LEVEL-2
  * 스택/큐 > 기능개발
  */
-public class Prog42586 {
+public class Solution {
 
     private class Task {
         int progress;
