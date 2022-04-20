@@ -3,9 +3,15 @@ import java.util.Queue;
 
 /**
  * LEVEL-2
- * 2021 카카오 채용연계형 인터십 > 거리두기 확인하기
+ * 2021 카카오 채용연계형 인턴십 > 거리두기 확인하기
+ * https://programmers.co.kr/learn/courses/30/lessons/81302
  */
-public class Prog81302 {
+public class Solution {
+
+    private static final char PERSON = 'P';
+    private static final char EMPTY_TABLE = 'O';
+    private static final char PARTITION = 'X';
+
     private class Position {
         int y;
         int x;
@@ -17,65 +23,64 @@ public class Prog81302 {
     }
 
     public int[] solution(String[][] places) {
-        int[] answer = {0, 0, 0, 0, 0};
+        int[] answer = new int[5];
+
         for (int i = 0; i < 5; i++) {
-            String[][] place = new String[5][5];
-
-            for (int j = 0; j < 5; j++)
-                place[j] = places[i][j].split("");
-
-            if (executeAll(place))
-                answer[i] = 1;
+            answer[i] = checkPlace(convert(places[i]));
         }
 
         return answer;
     }
 
-    private boolean executeAll(String[][] place) {
-        for (int y = 0; y < 5; y++) {
-            for (int x = 0; x < 5; x++) {
-                if (place[y][x].equals("P"))
-                    if (!bfs(place, new Position(y, x)))
-                        return false;
+    private char[][] convert(String[] place) {
+        char[][] ret = new char[5][5];
+        for (int i = 0; i < 5; i++) {
+            ret[i] = place[i].toCharArray();
+        }
+
+        return ret;
+    }
+
+    private int checkPlace(char[][] place) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (place[i][j] == PERSON) {
+                    if (!isObey(place, new Position(i, j)))
+                        return 0;
+                }
             }
         }
 
-        return true;
+        return 1;
     }
 
-    private boolean bfs(String[][] place, Position start) {
-        int[][] direction = {
-                {-1, 0}, {0, 1}, {1, 0}, {0, -1}
-        };
+    private boolean isObey(char[][] place, Position person) {
+        int[][] direction = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+        Queue<Position> queue = new LinkedList<>();
+        boolean[][] visit = new boolean[5][5];
 
-        boolean[][] visited = new boolean[5][5];
+        queue.add(person);
+        visit[person.y][person.x] = true;
 
-        Queue<Position> qu = new LinkedList();
-        qu.add(start);
-        visited[start.y][start.x] = true;
+        int dist = 0;
+        while (!queue.isEmpty() && dist < 2) {
+            dist++;
 
-        int distance = 0;
-        while (!qu.isEmpty()) {
-            distance++;
-            if (distance == 3)
-                break;
-
-            int quSize = qu.size();
-            for (int i = 0; i < quSize; i++) {
-                Position now = qu.poll();
+            int qSize = queue.size();
+            for (int i = 0; i < qSize; i++) {
+                Position now = queue.poll();
 
                 for (int[] d : direction) {
-                    int dy = now.y + d[0];
-                    int dx = now.x + d[1];
+                    int ny = now.y + d[0];
+                    int nx = now.x + d[1];
 
-                    if (dy >= 0 && dy < 5 && dx >= 0 && dx < 5 && !visited[dy][dx]) {
-                        if (distance < 3 && place[dy][dx].equals("P"))
+                    if (0 <= ny && ny < 5 && 0 <= nx && nx < 5 && place[ny][nx] != PARTITION && !visit[ny][nx]) {
+                        if (place[ny][nx] == PERSON) {
                             return false;
-
-                        if (place[dy][dx].equals("O")) {
-                            qu.add(new Position(dy, dx));
-                            visited[dy][dx] = true;
                         }
+
+                        queue.add(new Position(ny, nx));
+                        visit[ny][nx] = true;
                     }
                 }
             }
