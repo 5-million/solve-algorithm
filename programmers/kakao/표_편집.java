@@ -3,89 +3,105 @@ import java.util.Stack;
 /**
  * LEVEL-3
  * 2021 카카오 채용연계형 인턴십 > 표 편집
+ * https://programmers.co.kr/learn/courses/30/lessons/81303
  */
 public class Solution {
 
-    private class Node {
-        boolean isExist;
-        Node prev;
-        Node next;
+    private class Data {
+        Data front;
+        boolean exists;
+        Data back;
 
-        public Node() {
-            isExist = true;
-            prev = null;
-            next = null;
+        public Data(Data front) {
+            this.front = front;
+            this.exists = true;
+        }
+
+        public Data delete() {
+            exists = false;
+
+            if (front != null) front.back = back;
+            if (back != null) {
+                back.front = front;
+                return back;
+            } else {
+                return front;
+            }
+        }
+
+        public void restore() {
+            exists = true;
+            if (front != null) front.back = this;
+            if (back != null) back.front = this;
         }
     }
 
-    Stack<Node> stack = new Stack<>();
+    private class Table {
+        Data[] data;
+        Data selected;
+        Stack<Data> deleted = new Stack<>();
 
-    public String solution(int n, int k, String[] cmd) {
-        Node[] nodes = new Node[n];
-        for (int i = 0; i < n; i++)
-            nodes[i] = new Node();
+        public Table(int n, int k) {
+            data = new Data[n];
+            data[0] = new Data(null);
+            for (int i = 1; i < n; i++) {
+                data[i] = new Data(data[i - 1]);
+                data[i - 1].back = data[i];
+            }
 
-        nodes[0].next = nodes[1];
-        for (int i = 1; i < n - 1; i++) {
-            nodes[i].prev = nodes[i - 1];
-            nodes[i].next = nodes[i + 1];
+             selected = data[k];
         }
-        nodes[n - 1].prev = nodes[n - 2];
 
-        Node cursor = nodes[k];
-        for (String c : cmd) {
-            String[] command = c.split(" ");
-            switch (command[0]) {
+        public Data[] getData() {
+            return data;
+        }
+
+        public void u(int x) {
+            while (x-- > 0) {
+                selected = selected.front;
+            }
+        }
+
+        public void d(int x) {
+            while (x-- > 0) {
+                selected = selected.back;
+            }
+        }
+
+        public void c() {
+            deleted.push(selected);
+            selected = selected.delete();
+        }
+
+        public void z() {
+            deleted.pop().restore();
+        }
+    }
+
+    public String solution(int n, int k, String[] command) {
+        Table table = new Table(n, k);
+        for (String cmd : command) {
+            String[] s = cmd.split(" ");
+            switch (s[0]) {
                 case "U":
-                    cursor = cmdU(cursor, Integer.parseInt(command[1]));
+                    table.u(Integer.parseInt(s[1]));
                     break;
                 case "D":
-                    cursor = cmdD(cursor, Integer.parseInt(command[1]));
+                    table.d(Integer.parseInt(s[1]));
                     break;
                 case "C":
-                    cursor = cmdC(cursor);
+                    table.c();
                     break;
                 default:
-                    cmdZ();
+                    table.z();
             }
         }
 
         StringBuilder sb = new StringBuilder();
-        for (Node node : nodes) {
-            if (node.isExist) sb.append("O");
+        for (Data data : table.getData()) {
+            if (data.exists) sb.append("O");
             else sb.append("X");
         }
         return sb.toString();
-    }
-
-    private Node cmdU(Node cursor, int n) {
-        while (n-- > 0)
-            cursor = cursor.prev;
-        return cursor;
-    }
-
-    private Node cmdD(Node cursor, int n) {
-        while (n-- > 0)
-            cursor = cursor.next;
-        return cursor;
-    }
-
-    private Node cmdC(Node cursor) {
-        cursor.isExist = false;
-        stack.add(cursor);
-        if (cursor.prev != null) cursor.prev.next = cursor.next;
-        if (cursor.next != null)  {
-            cursor.next.prev = cursor.prev;
-            return cursor.next;
-        } else {
-            return cursor.prev;
-        }
-    }
-
-    private void cmdZ() {
-        Node restore = stack.pop();
-        restore.isExist = true;
-        if (restore.prev != null) restore.prev.next = restore;
-        if (restore.next != null) restore.next.prev = restore;
     }
 }
