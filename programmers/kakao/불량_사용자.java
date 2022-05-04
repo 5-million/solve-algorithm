@@ -1,63 +1,55 @@
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * LEVEL-3
  * 2019 카카오 개발자 겨울 인턴십 > 불량 사용자
+ * https://programmers.co.kr/learn/courses/30/lessons/64064
  */
-public class Solution {
-
-    private Set<String> combinations = new HashSet<>();
+class Solution {
+    
+    private Set<Integer> combi = new HashSet<>();
 
     public int solution(String[] user_id, String[] banned_id) {
-        int bannedLen = banned_id.length;
-        List<String>[] candidates = new List[bannedLen];
+        List<Integer>[] candidate = new List[banned_id.length];
 
-        for (int i = 0; i < bannedLen; i++)
-            candidates[i] = new ArrayList<>();
+        for (int i = 0; i < banned_id.length; i++) {
+            candidate[i] = new ArrayList<>();
+            String bannedId = banned_id[i];
+            for (int j = 0; j < user_id.length; j++) {
+                String userId = user_id[j];
 
-        for (int i = 0; i < bannedLen; i++) {
-            for (String user : user_id) {
-                if (isPossible(user, banned_id[i]))
-                    candidates[i].add(user);
+                if (isMatched(userId, bannedId))
+                    candidate[i].add(j);
             }
-
-            candidates[i].sort(Comparator.naturalOrder());
         }
 
-        combination(bannedLen, 0, candidates, new Stack<>());
-        return combinations.size();
+        combination(candidate, 0, 0);
+        return combi.size();
     }
 
-    private boolean isPossible(String userId, String bannedId) {
-        if (userId.length() != bannedId.length())
-            return false;
-
-        char[] charsUserId = userId.toCharArray();
-        char[] charsBannedId = bannedId.toCharArray();
-
-        int match = 0;
-        for (int i = 0; i < charsUserId.length; i++) {
-            if (charsBannedId[i] == '*' || charsUserId[i] == charsBannedId[i])
-                match++;
+    private boolean isMatched(String userId, String bannedId) {
+        if (bannedId.length() != userId.length()) return false;
+        for (int k = 0; k < bannedId.length(); k++) {
+            if (bannedId.charAt(k) != '*' && bannedId.charAt(k) != userId.charAt(k))
+                return false;
         }
 
-        return match == charsUserId.length;
+        return true;
     }
 
-    private void combination(int n, int index, List<String>[] candidates, Stack<String> stack) {
-        if (n == index) {
-            String combi = stack.stream().sorted().collect(Collectors.joining());
-            combinations.add(combi);
+    private void combination(List<Integer>[] candidate, int idx, int bitmask) {
+        if (idx == candidate.length) {
+            combi.add(bitmask);
             return;
         }
 
-        for (String candi : candidates[index]) {
-            if (!stack.contains(candi)) {
-                stack.push(candi);
-                combination(n, index + 1, candidates, stack);
-                stack.pop();
-            }
+        for (int i = 0; i < candidate[idx].size(); i++) {
+            int userId = candidate[idx].get(i);
+            if ((1 << userId & bitmask) == 0)
+                combination(candidate, idx + 1, 1 << userId | bitmask);
         }
     }
 }
