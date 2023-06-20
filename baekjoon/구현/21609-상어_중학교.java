@@ -142,9 +142,11 @@ public class Main {
 		BlockGroup blockGroup = new BlockGroup();
 		int color = map[y][x];
 		Queue<int[]> q = new ArrayDeque<>();
+		boolean[][] tempVisit = new boolean[n][n];
 
 		q.add(new int[] {y, x});
 		visit[y][x] = true;
+		tempVisit[y][x] = true;
 
 		while (!q.isEmpty()) {
 			int[] cur = q.poll();
@@ -154,8 +156,12 @@ public class Main {
 				int ny = cur[0] + d[0];
 				int nx = cur[1] + d[1];
 
-				if (checkRange(ny, nx) && !visit[ny][nx] && (map[ny][nx] == RAINBOW_BLOCK || map[ny][nx] == color)) {
-					visit[ny][nx] = true;
+				if (checkRange(ny, nx) && !tempVisit[ny][nx] && (map[ny][nx] == RAINBOW_BLOCK || map[ny][nx] == color)) {
+					if (map[ny][nx] != RAINBOW_BLOCK) {
+						visit[ny][nx] = true;
+					}
+
+					tempVisit[ny][nx] = true;
 					q.add(new int[] {ny, nx});
 				}
 			}
