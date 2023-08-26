@@ -1,4 +1,4 @@
-// blog: https://leetcode.com/problems/majority-element/description/?envType=study-plan-v2&envId=top-interview-150
+// blog: https://velog.io/@eello/LeetCode-169.-Majority-Element
 class Solution {
     public int majorityElement(int[] nums) {
         int majority = 0;
