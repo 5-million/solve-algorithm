@@ -1,3 +1,4 @@
+// blog: https://velog.io/@eello/LeetCode-383.-Ransom-Note
 class Solution {
     public boolean canConstruct(String ransomNote, String magazine) {
         char[] letters = new char[26];
